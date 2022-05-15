@@ -1,0 +1,20 @@
+{
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+    "compilerOptions": {
+        "strict": true,
+        "lib": ["esnext", "dom"],
+        "jsx": "preserve",
+        "moduleResolution": "node",
+        "target": "esnext",
+        "isolatedModules": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "paths": {
+            "@stcss/*": ["./packages/*/"]
+        }
+    }
+}

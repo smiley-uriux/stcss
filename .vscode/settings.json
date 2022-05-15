@@ -8,5 +8,6 @@
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ]
+  ],
+  "vitest.commandLine": "npx vitest --root ./packages/core"
 }
