@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MaybeArray, Obj, StDynamicValue, StObj, StResponsiveObj, StStyle } from './types';
+import { MaybeArray, Obj, StDynamicValue, StObj, StResponsiveObj, StResponsiveValue, StStyle } from './types';
 
 export const resolveDynamicValue = <V, A>(value: StDynamicValue<V, A>, args: A): V | undefined => {
     return typeof value === 'function' ? (value as any)(args) : value;
@@ -18,12 +18,44 @@ export const objForEach = (obj: any, args: any | undefined, cb: (c: [string, any
     }
 };
 
+export type Transformer = (prop: string, value: string) => Record<string, string> | string | undefined;
+
+export const transformValue = (prop: string, val: string, transformers: Transformer[], result: Record<string, string> = {}): Record<string, string> => {
+    let transformed = false;
+    for (const transformer of transformers) {
+        const r = transformer(prop, val);
+        if (r !== undefined) {
+            transformed = true;
+            if (r && typeof r === 'object') {
+                Object.entries(r).forEach(([tProp, tVal]) => {
+                    transformValue(
+                        tProp,
+                        tVal,
+                        transformers.filter((t) => t !== transformer),
+                        result
+                    );
+                });
+                break;
+            } else {
+                result[prop] = r;
+            }
+        }
+    }
+
+    if (!transformed) {
+        result[prop] = val;
+    }
+
+    return result;
+};
+
 export const resolveStStyle = <A>(
     style: StStyle<A> | undefined,
     args?: A,
+    transformers?: Transformer[],
     sel = '?',
-    result: Record<string, string> = {}
-): Record<string, MaybeArray<string | number>> | undefined => {
+    result: Record<string, string | string[]> = {}
+): Record<string, MaybeArray<string | number>> => {
     if (style) {
         objForEach(style, args, ([key, val]) => {
             if (typeof val === 'object') {
@@ -34,32 +66,43 @@ export const resolveStStyle = <A>(
                         if (!newSel.includes('?')) {
                             newSel = '? ' + newSel;
                         }
-                        resolveStStyle(val[1], args, newSel, result);
+                        resolveStStyle(val[1], args, transformers, newSel, result);
                     });
                 } else if (!Array.isArray(val)) {
-                    return resolveStStyle(val, args, sel + key, result);
+                    return resolveStStyle(val, args, transformers, sel + key, result);
                 }
             }
-            // this is where transformations will happen
-            result[`${sel}|${key}`] = val;
+            if (transformers) {
+                let transformedValue: Record<string, string | string[]>;
+                if (Array.isArray(val)) {
+                    const transformedValues = val.map((v) => transformValue(key, v, transformers));
+                    transformedValue = transformedValues.reduce((obj, v) => {
+                        Object.entries(v).forEach(([tProp, tVal]) => {
+                            if (!obj[tProp]) {
+                                obj[tProp] = [];
+                            }
+                            obj[tProp].push(tVal);
+                        });
+                        return obj;
+                    }, {} as Record<string, string[]>);
+                } else {
+                    transformedValue = transformValue(key, val, transformers);
+                }
+                Object.entries(transformedValue).forEach(([tProp, tVal]) => {
+                    result[`${sel}|${tProp}`] = tVal;
+                });
+            } else {
+                result[`${sel}|${key}`] = val;
+            }
         });
     }
     return result;
 };
 
-export function resolveStObj<O extends Obj, A extends Obj>(
-    obj: StObj<O, A> | StResponsiveObj<O> | undefined,
-    bpIndex: number,
-    args: A = {} as any
-): O | undefined {
-    if (obj === undefined) return undefined;
-    if (typeof obj === 'function') {
-        return resolveStObj(obj(args), bpIndex, args);
-    }
-    return Object.entries(obj).reduce((obj, [prop, value]) => {
-        if (typeof value === 'function') {
-            obj[prop] = resolveStObj(value(args), bpIndex, args);
-        } else if (Array.isArray(value)) {
+export function resolveStObj<O extends Obj, A extends Obj>(obj: StObj<O, A> | StResponsiveObj<O> | undefined, bpIndex: number, args: A = {} as any): O {
+    const result: Record<string, unknown> = {};
+    objForEach(obj, args, ([prop, value]) => {
+        if (Array.isArray(value)) {
             let v;
             for (let i = bpIndex + 1; i--; i >= 0) {
                 if (value[i] !== undefined) {
@@ -68,13 +111,13 @@ export function resolveStObj<O extends Obj, A extends Obj>(
                 }
             }
             if (v !== null && v !== undefined) {
-                obj[prop] = v;
+                result[prop] = v;
             }
         } else {
-            obj[prop] = value && typeof value === 'object' ? resolveStObj(value, bpIndex, args) : value;
+            result[prop] = value && typeof value === 'object' ? resolveStObj(value, bpIndex, args) : value;
         }
-        return obj;
-    }, {} as Record<string, unknown>) as O;
+    });
+    return result as O;
 }
 
 export const mergeStObjs = <O extends Obj, A extends Obj>(bpIndex: number, objs: (StObj<O, A> | undefined)[], args: A = {} as any): O => {
@@ -83,6 +126,44 @@ export const mergeStObjs = <O extends Obj, A extends Obj>(bpIndex: number, objs:
         Object.assign(mergedObj, resolveStObj(obj, bpIndex, args));
     }
     return mergedObj as O;
+};
+
+export const resolveResponsiveValue = <V>(val: StResponsiveValue<V>, bpIndex: number): V | null | undefined => {
+    if (!Array.isArray(val)) return val;
+    for (let i = bpIndex; i >= 0; i--) {
+        if (val[i] !== undefined) {
+            return val[i];
+        }
+    }
+    return null;
+};
+
+export const mergeResponsiveObjs = (...objs: StResponsiveObj<any>[]): StResponsiveObj<any> | undefined => {
+    const result: StResponsiveObj<any> = {};
+    objs.forEach((obj) => {
+        Object.entries(obj || {}).forEach(([key, val]) => {
+            const prevVal = result[key];
+            if (Array.isArray(val)) {
+                result[key] = [];
+                for (let i = 0; i < Math.max(Array.isArray(prevVal) ? prevVal.length : 0, val.length); i++) {
+                    result[key][i] = resolveResponsiveValue(val, i);
+                    if (result[key][i] === null) {
+                        result[key][i] = resolveResponsiveValue(prevVal, i);
+                    }
+                }
+                if ((result[key] as string[]).every((v, _, arr) => v === arr[0])) {
+                    if (result[key][0] === null || result[key][0] === undefined) {
+                        delete result[key];
+                    } else {
+                        result[key] = result[key][0];
+                    }
+                }
+            } else if (val !== undefined && val !== null) {
+                result[key] = val;
+            }
+        });
+    });
+    return result;
 };
 
 /*
