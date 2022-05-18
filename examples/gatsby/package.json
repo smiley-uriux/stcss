@@ -6,7 +6,7 @@
     "gatsby": "^4.14.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "@smiley-uriux/gatsby-plugin-stcss": "^0.0.1",
+    "@smiley-uriux/gatsby-plugin-stcss": "^0.0.0",
     "@smiley-uriux/stcss": "^0.0.1"
   },
   "scripts": {

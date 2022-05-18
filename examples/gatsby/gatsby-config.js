@@ -4,11 +4,7 @@ module.exports = {
   },
   plugins: [
     {
-      resolve: `gatsby-plugin-stcss`,
-      options: {
-        name: `images`,
-        path: `${__dirname}/src/images`,
-      },
+      resolve: `gatsby-plugin-stcss`
     }
   ],
 }
