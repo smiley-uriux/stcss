@@ -1,13 +1,16 @@
 {
   "name": "@smiley-uriux/gatsby-plugin-stcss",
   "version": "0.0.0",
-  "description": "A plugin to",
+  "description": "A plugin that provides support for the StCss styling library.",
   "main": "index.js",
   "keywords": [
     "gatsby",
     "gatsby-plugin",
     "stcss"
   ],
+  "peerDependencies": {
+    "@smiley-uriux/stcss": "^0.0.1"
+  },
   "author": "Andrew Smiley <jayalfredprufrock@gmail.com>",
   "license": "0BSD",
   "publishConfig": {
