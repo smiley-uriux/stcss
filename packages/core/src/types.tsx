@@ -65,16 +65,16 @@ export type StCreateOptions<
     P extends Obj = Obj,
     DP extends Partial<P> = Obj,
     FA extends Exclude<keyof JSX.IntrinsicElements[I], 'className'> = never,
-    FC extends keyof StCssProps = never
+    FS extends keyof StCssProps = never
 > = {
     el: I;
     className?: MaybeArray<StDynamicValue<string, MergeDefaults<P, keyof DP>>>;
     defaultAttrs?: MaybeArray<StObj<Omit<JSX.IntrinsicElements[I], 'className'>, MergeDefaults<P, keyof DP>>>;
     defaultProps?: MaybeArray<StResponsiveObj<DP>>;
     forwardAttrs?: FA[];
-    forwardCss?: FC[];
+    forwardCss?: FS[];
     render?: (props: MergeDefaults<P, keyof DP> & { C: I; attrs: JSX.IntrinsicElements[I] & { children?: React.ReactNode } }) => React.ReactNode;
-    styles?: MaybeArray<StStyle<MergeDefaults<P, keyof DP>>>;
+    css?: MaybeArray<StStyle<MergeDefaults<P, keyof DP>>>;
 };
 
 // I = intrinsic element type
@@ -103,9 +103,7 @@ export type StExtendOptions<
     defaultAttrs?: StObj<Omit<JSX.IntrinsicElements[A], 'className'>, MergeDefaults<P, keyof DP>>;
     forwardAttrs?: FA[];
     forwardCss?: FS[];
-    styles?:
-        | StStyle<MergeDefaults<P, keyof DP> & { attrs: JSX.IntrinsicElements[A] }>
-        | StStyle<MergeDefaults<P, keyof DP> & { attrs: JSX.IntrinsicElements[A] }>[];
+    css?: MaybeArray<StStyle<MergeDefaults<P, keyof DP> & { attrs: JSX.IntrinsicElements[A] }>>;
 } & ([RequiredKeys<DP>] extends [never]
     ? {
           defaultProps?: StResponsiveObj<DP>;

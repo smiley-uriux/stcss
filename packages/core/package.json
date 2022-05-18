@@ -1,5 +1,5 @@
 {
-  "name": "stcss",
+  "name": "@smiley-uriux/stcss",
   "version": "0.0.0",
   "main": "dist/stcss.cjs.js",
   "module": "dist/stcss.es.js",
@@ -10,7 +10,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "test": "vitest --coverage",
+    "test": "vitest run",
     "test:ui": "vitest --ui --coverage"
   },
   "peerDependencies": {
@@ -25,9 +25,17 @@
     "@vitejs/plugin-react": "^1.3.2",
     "@vitest/ui": "^0.12.6",
     "c8": "^7.11.2",
-    "happy-dom": "^3.2.0",
+    "csstype": "^3.0.11",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
     "vitest": "^0.12.6"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/smiley-uriux/stcss.git",
+    "directory": "packages/core"
   }
 }

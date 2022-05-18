@@ -13,6 +13,9 @@ const Title = st()({
     defaultAttrs: {
         title: 'testing title',
     },
+    css: {
+        color: ['green', 'red'],
+    },
     render: ({ C, attrs }) => {
         return <C {...attrs} />;
     },

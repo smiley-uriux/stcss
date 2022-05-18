@@ -234,7 +234,7 @@ describe('resolveStStyle', () => {
 
 describe('mergeResponsiveObjs', () => {
     test('merges simple non responsive styles from left to right', () => {
-        const obj = mergeResponsiveObjs(
+        const obj = mergeResponsiveObjs([
             {
                 color: 'green',
                 display: 'block',
@@ -244,8 +244,8 @@ describe('mergeResponsiveObjs', () => {
             },
             {
                 display: 'flex',
-            }
-        );
+            },
+        ]);
 
         expect(obj).toEqual({
             color: 'blue',
@@ -254,14 +254,14 @@ describe('mergeResponsiveObjs', () => {
     });
 
     test('overwrites responsive styles with non-responsive ones', () => {
-        const obj = mergeResponsiveObjs(
+        const obj = mergeResponsiveObjs([
             {
                 color: ['green', 'blue'],
             },
             {
                 color: 'red',
-            }
-        );
+            },
+        ]);
 
         expect(obj).toEqual({
             color: 'red',
@@ -269,32 +269,34 @@ describe('mergeResponsiveObjs', () => {
     });
 
     test('overwrites non-responsive styles with responsive ones', () => {
-        const obj = mergeResponsiveObjs(
+        const obj = mergeResponsiveObjs([
             {
                 color: 'red',
             },
             {
                 color: ['green', 'blue'],
-            }
-        );
+            },
+        ]);
 
         expect(obj).toEqual({
-            color: ['green', 'blue'],
+            color: ['green', 'blue', 'blue', 'blue'],
         });
     });
 
     test('treats "undefined" as the responsive value at the previous index', () => {
-        const obj = mergeResponsiveObjs({
-            color: ['red', , 'blue'],
-        });
+        const obj = mergeResponsiveObjs([
+            {
+                color: ['red', , 'blue'],
+            },
+        ]);
 
         expect(obj).toEqual({
-            color: ['red', 'red', 'blue'],
+            color: ['red', 'red', 'blue', 'blue'],
         });
     });
 
     test('treats "null" as the current responsive value at the same index', () => {
-        const obj = mergeResponsiveObjs(
+        const obj = mergeResponsiveObjs([
             {
                 color: 'red',
                 display: ['flex', , 'block'],
@@ -302,32 +304,32 @@ describe('mergeResponsiveObjs', () => {
             {
                 color: ['green', null, 'yellow'],
                 display: ['block', null],
-            }
-        );
+            },
+        ]);
 
         expect(obj).toEqual({
-            color: ['green', 'red', 'yellow'],
-            display: ['block', 'flex', 'block'],
+            color: ['green', 'red', 'yellow', 'yellow'],
+            display: ['block', 'flex', 'block', 'block'],
         });
     });
 
     test('treats leading undefined responsive values the same as null', () => {
-        const obj = mergeResponsiveObjs(
+        const obj = mergeResponsiveObjs([
             {
                 color: 'red',
             },
             {
                 color: [, , 'yellow'],
-            }
-        );
+            },
+        ]);
 
         expect(obj).toEqual({
-            color: ['red', 'red', 'yellow'],
+            color: ['red', 'red', 'yellow', 'yellow'],
         });
     });
 
     test('flattens responsive values that contain only one unique value', () => {
-        const obj = mergeResponsiveObjs(
+        const obj = mergeResponsiveObjs([
             {
                 color: ['red'],
                 display: ['block', undefined, 'block'],
@@ -335,8 +337,8 @@ describe('mergeResponsiveObjs', () => {
             {
                 color: ['red', undefined],
                 display: ['block'],
-            }
-        );
+            },
+        ]);
 
         expect(obj).toEqual({
             color: 'red',
@@ -345,12 +347,14 @@ describe('mergeResponsiveObjs', () => {
     });
 
     test('remove values that resolve to empty arrays, null, or undefined', () => {
-        const obj = mergeResponsiveObjs({
-            color: [],
-            display: [, ,],
-            opacity: null,
-            border: undefined,
-        });
+        const obj = mergeResponsiveObjs([
+            {
+                color: [],
+                display: [, ,],
+                opacity: null,
+                border: undefined,
+            },
+        ]);
 
         expect(obj).toEqual({});
     });

@@ -5,11 +5,11 @@ import dts from 'vite-dts'
 export default defineConfig({
   build: {
     lib: {
+      name: 'stcss',
       entry: 'src/index.ts',
-      formats: ['es', 'cjs'],
     },
     rollupOptions: {
-      external: ['react'],
+      external: ['react', 'react/jsx-runtime'],
       output: {
         sourcemapExcludeSources: true,
       },
@@ -21,6 +21,6 @@ export default defineConfig({
   plugins: [react(), dts()],
   test: {
     globals: true,
-    environment: 'happy-dom'
+    environment: 'jsdom'
   }
 })

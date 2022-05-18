@@ -3,46 +3,48 @@
 import '@testing-library/jest-dom';
 import { cleanup, render } from '@testing-library/react';
 import React from 'react';
-import { afterEach } from 'vitest';
-import { makeStConfig, StProvider } from '../context';
+import { StProvider } from '../context';
 
-const config = makeStConfig({
+const config = {
     theme: 'default',
     mediaQueries: {
-        mobile: 'mobile',
-        tablet: 'tablet',
-        laptop: 'laptop',
-        desktop: 'desktop',
+        mobile: '(max-width: 719px)',
+        tablet: '(min-width: 720px) and (max-width: 991px)',
+        laptop: '(min-width: 992px) and (max-width: 1199px)',
+        desktop: '(min-width: 1200px)',
     },
     breakpoints: ['mobile', 'tablet', 'laptop', 'desktop'],
-});
-
-afterEach(() => {
-    cleanup();
-});
+};
 
 export const renderAtBp = (bp: string, el: React.ReactElement) => {
     window.matchMedia = vi.fn().mockImplementation((mq) => {
         return {
             addEventListener: () => {},
             removeEventListener: () => {},
-            matches: mq === bp,
+            matches: mq === (config.mediaQueries as any)[bp],
         };
     });
+
+    cleanup();
 
     const { container } = render(el, {
         wrapper: ({ children }) => <StProvider config={config}>{children}</StProvider>,
     });
 
-    //debug();
+    // JSDOM uses CSSOM which cannot parse CSS media queries (and just ignores them)
+    // to overcome this limitation, we copy over the rules within the media query / breakpoint
+    // we are currently testing/rendering, and insert them into the style tag manually wihout
+    // wrapping them inside a media query
+    const style = document.getElementById(`st-${bp}`) as HTMLStyleElement;
+    style.innerHTML = style.sheet?.cssRules[0]?.cssText.replace(/@media (?:[^{]*){([\s\S]*)}/, '$1') || '';
 
     return container.firstChild;
 };
 
-export const renderAtBps = (el: React.ReactElement, test?: (el: ChildNode | null, bp: string) => void) => {
-    const els = config.breakpoints.map((bp) => renderAtBp(bp, el));
-    if (test) {
-        els.forEach((el, i) => test(el, config.breakpoints[i]));
-    }
-    return els;
+export const testAtBps = (el: React.ReactElement, bpTest: (el: ChildNode | null, bpIndex: number) => void) => {
+    config.breakpoints.forEach((bp, i) => {
+        test(`at ${bp} breakpoint`, () => {
+            bpTest(renderAtBp(bp, el), i);
+        });
+    });
 };

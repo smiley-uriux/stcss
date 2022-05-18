@@ -25,14 +25,14 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>48/48</span>
+                <span class='fraction'>50/50</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>13/13</span>
+                <span class='fraction'>9/9</span>
             </div>
         
             
@@ -46,7 +46,7 @@
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>48/48</span>
+                <span class='fraction'>50/50</span>
             </div>
         
             
@@ -111,7 +111,9 @@
 <a name='L46'></a><a href='#L46'>46</a>
 <a name='L47'></a><a href='#L47'>47</a>
 <a name='L48'></a><a href='#L48'>48</a>
-<a name='L49'></a><a href='#L49'>49</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -130,82 +132,86 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">711x</span>
-<span class="cline-any cline-yes">711x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">10428x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">2607x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">632x</span>
-<span class="cline-any cline-yes">632x</span>
-<span class="cline-any cline-yes">553x</span>
-<span class="cline-any cline-yes">553x</span>
-<span class="cline-any cline-yes">632x</span>
-<span class="cline-any cline-yes">616x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import '@testing-library/jest-dom';
 import { cleanup, render } from '@testing-library/react';
 import React from 'react';
-import { afterEach } from 'vitest';
-import { makeStConfig, StProvider } from '../context';
+import { StProvider } from '../context';
 &nbsp;
-const config = makeStConfig({
+const config = {
     theme: 'default',
     mediaQueries: {
-        mobile: 'mobile',
-        tablet: 'tablet',
-        laptop: 'laptop',
-        desktop: 'desktop',
+        mobile: '(max-width: 719px)',
+        tablet: '(min-width: 720px) and (max-width: 991px)',
+        laptop: '(min-width: 992px) and (max-width: 1199px)',
+        desktop: '(min-width: 1200px)',
     },
     breakpoints: ['mobile', 'tablet', 'laptop', 'desktop'],
-});
-&nbsp;
-afterEach(() =&gt; {
-    cleanup();
-});
+};
 &nbsp;
 export const renderAtBp = (bp: string, el: React.ReactElement) =&gt; {
     window.matchMedia = vi.fn().mockImplementation((mq) =&gt; {
         return {
             addEventListener: () =&gt; {},
             removeEventListener: () =&gt; {},
-            matches: mq === bp,
+            matches: mq === (config.mediaQueries as any)[bp],
         };
     });
+&nbsp;
+    cleanup();
 &nbsp;
     const { container } = render(el, {
         wrapper: ({ children }) =&gt; &lt;StProvider config={config}&gt;{children}&lt;/StProvider&gt;,
     });
 &nbsp;
-    //debug();
+    // JSDOM uses CSSOM which cannot parse CSS media queries (and just ignores them)
+    // to overcome this limitation, we copy over the rules within the media query / breakpoint
+    // we are currently testing/rendering, and insert them into the style tag manually wihout
+    // wrapping them inside a media query
+    const style = document.getElementById(`st-${bp}`) as HTMLStyleElement;
+    style.innerHTML = style.sheet?.cssRules[0]?.cssText.replace(/@media (?:[^{]*){([\s\S]*)}/, '$1') || '';
 &nbsp;
     return container.firstChild;
 };
 &nbsp;
-export const renderAtBps = (el: React.ReactElement, test?: (el: ChildNode | null, bp: string) =&gt; void) =&gt; {
-    const els = config.breakpoints.map((bp) =&gt; renderAtBp(bp, el));
-    if (test) {
-        els.forEach((el, i) =&gt; test(el, config.breakpoints[i]));
-    }
-    return els;
+export const testAtBps = (el: React.ReactElement, bpTest: (el: ChildNode | null, bpIndex: number) =&gt; void) =&gt; {
+    config.breakpoints.forEach((bp, i) =&gt; {
+        test(`at ${bp} breakpoint`, () =&gt; {
+            bpTest(renderAtBp(bp, el), i);
+        });
+    });
 };
 &nbsp;</pre></td></tr></table></pre>
 
@@ -214,7 +220,7 @@ export const renderAtBps = (el: React.ReactElement, test?: (el: ChildNode | null
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Sun May 15 2022 21:21:21 GMT-0400 (Eastern Daylight Time)
+                at Wed May 18 2022 17:11:05 GMT-0400 (Eastern Daylight Time)
             </div>
         <script src="../../prettify.js"></script>
         <script>

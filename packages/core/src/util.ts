@@ -138,14 +138,14 @@ export const resolveResponsiveValue = <V>(val: StResponsiveValue<V>, bpIndex: nu
     return null;
 };
 
-export const mergeResponsiveObjs = (...objs: StResponsiveObj<any>[]): StResponsiveObj<any> | undefined => {
+export const mergeResponsiveObjs = (objs: StResponsiveObj<any>[], bpCount = 4): StResponsiveObj<any> | undefined => {
     const result: StResponsiveObj<any> = {};
     objs.forEach((obj) => {
         Object.entries(obj || {}).forEach(([key, val]) => {
             const prevVal = result[key];
             if (Array.isArray(val)) {
                 result[key] = [];
-                for (let i = 0; i < Math.max(Array.isArray(prevVal) ? prevVal.length : 0, val.length); i++) {
+                for (let i = 0; i < bpCount; i++) {
                     result[key][i] = resolveResponsiveValue(val, i);
                     if (result[key][i] === null) {
                         result[key][i] = resolveResponsiveValue(prevVal, i);

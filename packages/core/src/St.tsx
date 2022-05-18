@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createElement } from 'react';
 import { useSt } from './hooks';
-import { Obj, PartialSome, PickRequired, RequiredKeys, StComponent, StCreateOptions, StCssProps, StExtendOptions } from './types';
-import { mergeStObjs, resolveDynamicValue } from './util';
+import { Obj, PartialSome, PickRequired, RequiredKeys, StComponent, StCreateOptions, StCssProps, StExtendOptions, StResponsiveObj } from './types';
+import { mergeResponsiveObjs, mergeStObjs, resolveDynamicValue, resolveStStyle } from './util';
 
 export const st = <P extends Obj = Obj>() => {
     return function st<
@@ -11,20 +11,28 @@ export const st = <P extends Obj = Obj>() => {
         FA extends Exclude<keyof JSX.IntrinsicElements[I], 'className'> = never,
         FC extends keyof StCssProps = never
     >(options: StCreateOptions<I, P, PD, FA, FC>): StComponent<I, PartialSome<P, keyof PD> & Pick<JSX.IntrinsicElements[I], FA> & Pick<StCssProps, FC>> {
-        const { el, defaultAttrs = [], defaultProps = [], className = [], forwardAttrs = [], forwardCss = [], render } = options;
+        const { el, defaultAttrs = [], defaultProps = [], className = [], forwardAttrs = [], forwardCss = [], css = [], render } = options;
 
         const defaultAttrsArray = Array.isArray(defaultAttrs) ? defaultAttrs : [defaultAttrs];
         const defaultPropsArray = Array.isArray(defaultProps) ? defaultProps : [defaultProps];
+        const defaultCssArray = Array.isArray(css) ? css : [css];
         const classNameArray = Array.isArray(className) ? className : [className];
 
         const St = function St({
             children,
             as,
             attrs,
+            css,
             className,
             ...props
-        }: Record<string, unknown> & { children?: React.ReactNode; as?: I; attrs?: Record<string, unknown>; className?: string }) {
-            const { bpIndex } = useSt();
+        }: Record<string, unknown> & {
+            children?: React.ReactNode;
+            as?: I;
+            attrs?: Record<string, unknown>;
+            className?: string;
+            css?: StResponsiveObj<Record<string, string>>;
+        }) {
+            const { bpIndex, styleManager } = useSt();
 
             const forwardedAttrs: Record<string, unknown> = {};
             const forwardedCss: Record<string, unknown> = {};
@@ -41,7 +49,12 @@ export const st = <P extends Obj = Obj>() => {
             const mergedProps = mergeStObjs<any, any>(bpIndex, [...defaultPropsArray, props]);
             const mergedAttrs = mergeStObjs<any, any>(bpIndex, [...defaultAttrsArray, attrs, forwardedAttrs], mergedProps);
 
-            const classNames = [...classNameArray.map((c) => resolveDynamicValue(c, mergedProps)), className].filter(Boolean);
+            const mergedCss = mergeResponsiveObjs(
+                [...defaultCssArray, css, forwardedCss].map((style) => resolveStStyle(style, mergedProps)),
+                styleManager.config.breakpoints.length
+            );
+            const cssClassNames = styleManager.getClassesForStyle(mergedCss);
+            const classNames = [...classNameArray.map((c) => resolveDynamicValue(c, mergedProps)), className, ...cssClassNames].filter(Boolean);
             if (classNames.length) {
                 mergedAttrs['className'] = classNames.join(' ');
             }
@@ -66,6 +79,7 @@ export const st = <P extends Obj = Obj>() => {
                 EFA extends Exclude<keyof JSX.IntrinsicElements[A], 'className'> = never,
                 EFS extends keyof StCssProps = never
             >(options: StExtendOptions<I, PartialSome<P, keyof PD>, E, ED, A, EFA, EFS>) {
+                const extendedCss = options.css || [];
                 return st({
                     el: options.as || (el as any),
                     className: options.className as any,
@@ -73,6 +87,7 @@ export const st = <P extends Obj = Obj>() => {
                     forwardCss: options.forwardCss as any,
                     defaultAttrs: [...defaultAttrsArray, options.defaultAttrs as any],
                     defaultProps: [...defaultPropsArray, options.defaultProps as any],
+                    css: [...defaultCssArray, ...(Array.isArray(extendedCss) ? extendedCss : [extendedCss])] as any,
                     render,
                 });
             };

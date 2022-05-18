@@ -1,0 +1,21 @@
+{
+  "name": "@smiley-uriux/gatsby-plugin-stcss",
+  "version": "0.0.0",
+  "description": "A plugin to",
+  "main": "index.js",
+  "keywords": [
+    "gatsby",
+    "gatsby-plugin",
+    "stcss"
+  ],
+  "author": "Andrew Smiley <jayalfredprufrock@gmail.com>",
+  "license": "0BSD",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/smiley-uriux/stcss.git",
+    "directory": "packages/gatsby-plugin-stcss"
+  }
+}

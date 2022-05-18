@@ -1,5 +1,5 @@
 import { st } from '../St';
-import { renderAtBp, renderAtBps } from './utils';
+import { renderAtBp, testAtBps } from './utils';
 
 describe('st', () => {
     describe('primitive components render', () => {
@@ -8,7 +8,7 @@ describe('st', () => {
                 el: 'h1',
             });
 
-            renderAtBps(<Title />, (el) => {
+            testAtBps(<Title />, (el) => {
                 expect(el?.nodeName).toEqual('H1');
             });
         });
@@ -18,7 +18,7 @@ describe('st', () => {
                 el: 'h1',
             });
 
-            renderAtBps(<Title as="h2" />, (el) => {
+            testAtBps(<Title as="h2" />, (el) => {
                 expect(el?.nodeName).toEqual('H2');
             });
         });
@@ -29,7 +29,7 @@ describe('st', () => {
                 className: 'title',
             });
 
-            renderAtBps(<Title />, (el) => {
+            testAtBps(<Title />, (el) => {
                 expect(el).toHaveClass('title');
             });
         });
@@ -40,42 +40,43 @@ describe('st', () => {
                 className: ['title', ({ size }) => size],
             });
 
-            renderAtBps(<Title size="large" />, (el) => {
+            testAtBps(<Title size="large" />, (el) => {
                 expect(el).toHaveClass('title', 'large');
             });
         });
 
         test('attributes passed as defaults', () => {
+            const title = ['test-mobile', 'test-tablet', 'test-laptop', 'test-desktop'];
             const Title = st()({
                 el: 'h1',
-                defaultAttrs: {
-                    title: ['test-mobile', 'test-tablet', 'test-laptop', 'test-desktop'],
-                },
+                defaultAttrs: { title },
             });
 
-            renderAtBps(<Title attrs={{ title: ['test-mobile', 'test-tablet', 'test-laptop', 'test-desktop'] }} />, (el, bp) => {
-                expect(el).toHaveAttribute('title', `test-${bp}`);
+            testAtBps(<Title />, (el, i) => {
+                expect(el).toHaveAttribute('title', title[i]);
             });
         });
 
         test('atributes passed in attrs prop', () => {
+            const title = ['test-mobile', 'test-tablet', 'test-laptop', 'test-desktop'];
             const Title = st()({
                 el: 'h1',
             });
 
-            renderAtBps(<Title attrs={{ title: ['test-mobile', 'test-tablet', 'test-laptop', 'test-desktop'] }} />, (el, bp) => {
-                expect(el).toHaveAttribute('title', `test-${bp}`);
+            testAtBps(<Title attrs={{ title }} />, (el, i) => {
+                expect(el).toHaveAttribute('title', title[i]);
             });
         });
 
         test('atributes passed as forwarded prop', () => {
+            const title = ['test-mobile', 'test-tablet', 'test-laptop', 'test-desktop'];
             const Title = st()({
                 el: 'h1',
                 forwardAttrs: ['title'],
             });
 
-            renderAtBps(<Title title={['test-mobile', 'test-tablet', 'test-laptop', 'test-desktop']} />, (el, bp) => {
-                expect(el).toHaveAttribute('title', `test-${bp}`);
+            testAtBps(<Title title={title} />, (el, i) => {
+                expect(el).toHaveAttribute('title', title[i]);
             });
         });
 
@@ -97,20 +98,89 @@ describe('st', () => {
         test('responsive attributes, following precedence rules', () => {
             const Title = st()({
                 el: 'h1',
-                defaultAttrs: {
-                    title: ['default-mobile', 'default-tablet', 'default-laptop', 'default-desktop'],
-                },
+                defaultAttrs: { title: ['default-mobile', 'default-tablet', 'default-laptop', 'default-desktop'] },
                 forwardAttrs: ['title'],
             });
 
-            const [mobile, tablet, laptop, desktop] = renderAtBps(
-                <Title title={['forward-mobile', null, 'forward-laptop', null]} attrs={{ title: [null, null, 'attrs-laptop-desktop'] }} />
-            );
+            testAtBps(<Title title={['forward-mobile', null, 'forward-laptop', null]} attrs={{ title: [null, null, 'attrs-laptop-desktop'] }} />, (el, i) => {
+                expect(el).toHaveAttribute('title', ['forward-mobile', 'default-tablet', 'forward-laptop', 'attrs-laptop-desktop'][i]);
+            });
+        });
 
-            expect(mobile).toHaveAttribute('title', 'forward-mobile');
-            expect(tablet).toHaveAttribute('title', 'default-tablet');
-            expect(laptop).toHaveAttribute('title', 'forward-laptop');
-            expect(desktop).toHaveAttribute('title', 'attrs-laptop-desktop');
+        test('css passed in options', () => {
+            const Title = st()({
+                el: 'h1',
+                css: {
+                    color: ['green', 'blue'],
+                    fontSize: '12px',
+                },
+            });
+
+            testAtBps(<Title>Testing</Title>, (el, i) => {
+                expect(el).toHaveStyle({
+                    color: ['green', 'blue', 'blue', 'blue'][i],
+                    fontSize: '12px',
+                });
+            });
+        });
+
+        test('css passed in css prop', () => {
+            const Title = st()({
+                el: 'h1',
+            });
+
+            testAtBps(<Title css={{ color: ['yellow', 'red'], fontSize: '14px' }}>Testing</Title>, (el, i) => {
+                expect(el).toHaveStyle({
+                    color: ['yellow', 'red', 'red', 'red'][i],
+                    fontSize: '14px',
+                });
+            });
+        });
+
+        test('css passed as forwarded prop', () => {
+            const Title = st()({
+                el: 'h1',
+                forwardCss: ['color'],
+            });
+
+            testAtBps(<Title color={['green', 'blue']}>Testing</Title>, (el, i) => {
+                expect(el).toHaveStyle({
+                    color: ['green', 'blue', 'blue', 'blue'][i],
+                });
+            });
+        });
+
+        test('non-responsive css, following precedence rules', () => {
+            const Title = st()({
+                el: 'h1',
+                css: {
+                    color: 'red',
+                    display: 'flex',
+                    opacity: 0,
+                },
+                forwardCss: ['color', 'display'],
+            });
+
+            const el = renderAtBp('mobile', <Title color="blue" css={{ color: 'yellow', display: 'block' }} />);
+            expect(el).toHaveStyle({
+                color: 'blue',
+                display: 'block',
+                opacity: 0,
+            });
+        });
+
+        test('responsive css, following precedence rules', () => {
+            const Title = st()({
+                el: 'h1',
+                css: { color: ['red', , 'blue'] },
+                forwardCss: ['color'],
+            });
+
+            testAtBps(<Title color={[null, null, 'green']} css={{ color: ['yellow', null] }} />, (el, i) => {
+                expect(el).toHaveStyle({
+                    color: ['yellow', 'red', 'green', 'blue'][i],
+                });
+            });
         });
     });
 });

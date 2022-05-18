@@ -1,7 +1,8 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { StContext } from './context';
+import { StyleManager } from './style-manager';
 
-export const useSt = (): { bpIndex: number } => useContext(StContext);
+export const useSt = (): { bpIndex: number; styleManager: StyleManager } => useContext(StContext);
 
 export const useHasMounted = (): boolean => {
     const [hasMounted, setHasMounted] = useState(false);
@@ -15,7 +16,6 @@ export const useMediaQueries = <Q extends Record<string, string>>(queries: Q): R
     const timeout = useRef<NodeJS.Timeout>();
     const matchesRef = useRef({});
 
-    /* c8 ignore start */
     const matchHandler = useCallback(
         (e: MediaQueryListEvent) => {
             if (timeout.current) {
@@ -38,7 +38,6 @@ export const useMediaQueries = <Q extends Record<string, string>>(queries: Q): R
         },
         [queries]
     );
-    /* c8 ignore stop */
 
     const [matchMediaMatches, matchMedias] = useMemo(() => {
         const matches: Record<string, boolean> = {};

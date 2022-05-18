@@ -1,9 +1,8 @@
 import React, { createContext } from 'react';
 import { useMediaQueries } from './hooks';
+import { StyleManager } from './style-manager';
 
-export type StMediaQuery = string | [undefined, number] | [number, undefined] | [number, number];
-
-export type StConfig<MQ extends Record<string, StMediaQuery>> = {
+export type StConfig<MQ extends Record<string, string> = Record<string, string>> = {
     theme?: string;
     mediaQueries: MQ;
     breakpoints: (keyof MQ)[];
@@ -11,7 +10,7 @@ export type StConfig<MQ extends Record<string, StMediaQuery>> = {
 
 export const makeStConfig = <MQ extends Record<string, string>>(config: StConfig<MQ>) => config;
 
-const defaultConfig = makeStConfig({
+const defaultConfig = {
     theme: 'default',
     mediaQueries: {
         mobile: '(max-width: 719px)',
@@ -20,11 +19,13 @@ const defaultConfig = makeStConfig({
         desktop: '(min-width: 1200px)',
     },
     breakpoints: ['mobile', 'tablet', 'laptop', 'desktop'],
-});
+};
 
-export const StContext = createContext({ bpIndex: 0 });
+const styleManager = new StyleManager(defaultConfig);
 
-export const StProvider = <MQ extends Record<string, string>>({ children, config }: { children: React.ReactNode; config?: StConfig<MQ> }) => {
+export const StContext = createContext({ bpIndex: 0, styleManager });
+
+export const StProvider = ({ children, config }: { children: React.ReactNode; config?: StConfig }) => {
     //const hasMounted = useHasMounted();
     const conf = config || defaultConfig;
     const mq = useMediaQueries(conf.mediaQueries);
@@ -32,6 +33,7 @@ export const StProvider = <MQ extends Record<string, string>>({ children, config
 
     const value = {
         bpIndex,
+        styleManager,
     };
 
     return <StContext.Provider value={value}>{children}</StContext.Provider>;
