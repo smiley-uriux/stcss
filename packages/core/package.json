@@ -1,6 +1,6 @@
 {
   "name": "@smiley-uriux/stcss",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "dist/stcss.cjs.js",
   "module": "dist/stcss.es.js",
   "files": [
