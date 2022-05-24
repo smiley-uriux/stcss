@@ -32,7 +32,7 @@ export const st = <P extends Obj = Obj>() => {
             className?: string;
             css?: StResponsiveObj<Record<string, string>>;
         }) {
-            const { bpIndex, styleManager } = useSt();
+            const { bpIndex, styleManager, breakpoints } = useSt();
 
             const forwardedAttrs: Record<string, unknown> = {};
             const forwardedCss: Record<string, unknown> = {};
@@ -51,7 +51,7 @@ export const st = <P extends Obj = Obj>() => {
 
             const mergedCss = mergeResponsiveObjs(
                 [...defaultCssArray, css, forwardedCss].map((style) => resolveStStyle(style, mergedProps)),
-                styleManager.config.breakpoints.length
+                breakpoints.length
             );
             const cssClassNames = styleManager.getClassesForStyle(mergedCss);
             const classNames = [...classNameArray.map((c) => resolveDynamicValue(c, mergedProps)), className, ...cssClassNames].filter(Boolean);

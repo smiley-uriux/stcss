@@ -12,6 +12,10 @@ export default defineConfig({
       external: ['react', 'react/jsx-runtime'],
       output: {
         sourcemapExcludeSources: true,
+        globals:  {
+            react: 'React',
+            'react/jsx-runtime': 'jsxRuntime'
+        }
       },
     },
     sourcemap: true,

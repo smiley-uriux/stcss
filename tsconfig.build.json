@@ -14,7 +14,7 @@
         "skipLibCheck": true,
         "forceConsistentCasingInFileNames": true,
         "paths": {
-            "@stcss/*": ["./packages/*/"]
+            "@smiley-uriux/*": ["./packages/*/"]
         }
     }
 }

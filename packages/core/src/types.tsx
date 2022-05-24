@@ -138,18 +138,3 @@ export const stTest =
     ) => {
         return options as unknown as StComponent<I, PartialSome<P, keyof PD> & Pick<JSX.IntrinsicElements[I], FA> & Pick<StCssProps, FS>>;
     };
-
-const Test = stTest<{ size: number }>()({
-    el: 'h1',
-    forwardCss: ['transition'],
-});
-
-const TestExtend = Test.extend<{ newProps?: string; size: number }>()({
-    defaultAttrs: {
-        title: 'test',
-    },
-    forwardAttrs: ['title'],
-    forwardCss: ['margin'],
-});
-
-<TestExtend title={['test']} margin={'1px'} size={[3]} />;

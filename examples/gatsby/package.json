@@ -1,20 +1,19 @@
 {
-  "name": "stcss-example-gatsby",
-  "private": true,
-  "description": "An example demonstrating gatsby-plugin-stcss usage.",
+  "name": "stcss-gatsby-example",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
   "dependencies": {
     "gatsby": "^4.14.1",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "@smiley-uriux/gatsby-plugin-stcss": "^0.0.1",
-    "@smiley-uriux/stcss": "^0.0.2"
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "@smiley-uriux/gatsby-plugin-stcss": "*"
   },
   "scripts": {
-    "build": "gatsby build",
-    "develop": "gatsby develop",
     "start": "gatsby develop",
-    "serve": "gatsby serve",
-    "clean": "gatsby clean"
+    "build": "gatsby clean && gatsby build",
+    "preview": "gatsby build && gatsby serve"
   },
-  "version": null
+  "author": "",
+  "license": "ISC"
 }

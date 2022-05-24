@@ -1,17 +1,15 @@
-import React, { createContext } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { createContext } from 'react';
 import { useMediaQueries } from './hooks';
 import { StyleManager } from './style-manager';
 
-export type StConfig<MQ extends Record<string, string> = Record<string, string>> = {
-    theme?: string;
+export type StConfig<MQ extends Record<string, string> = any> = {
     mediaQueries: MQ;
     breakpoints: (keyof MQ)[];
 };
 
-export const makeStConfig = <MQ extends Record<string, string>>(config: StConfig<MQ>) => config;
-
+/*
 const defaultConfig = {
-    theme: 'default',
     mediaQueries: {
         mobile: '(max-width: 719px)',
         tablet: '(min-width: 720px) and (max-width: 991px)',
@@ -20,21 +18,31 @@ const defaultConfig = {
     },
     breakpoints: ['mobile', 'tablet', 'laptop', 'desktop'],
 };
+*/
 
-const styleManager = new StyleManager(defaultConfig);
+export type StContext<MQ extends Record<string, string> = any> = StCss<MQ> & { bpIndex: number; mediaQueries: Record<keyof MQ, boolean> };
 
-export const StContext = createContext({ bpIndex: 0, styleManager });
+export type StCss<MQ extends Record<string, string> = any> = StConfig<MQ> & {
+    styleManager: StyleManager;
+};
 
-export const StProvider = ({ children, config }: { children: React.ReactNode; config?: StConfig }) => {
-    //const hasMounted = useHasMounted();
-    const conf = config || defaultConfig;
-    const mq = useMediaQueries(conf.mediaQueries);
-    const bpIndex = conf.breakpoints.findIndex((bp) => mq[bp]);
+export const isStCss = <MQ extends Record<string, string> = any>(config: StConfig<MQ> | StCss<MQ>): config is StCss<MQ> => {
+    return (config as StCss<MQ>).styleManager !== undefined;
+};
 
-    const value = {
-        bpIndex,
+export const canonizeStCss = <MQ extends Record<string, string> = any>(config: StConfig<MQ>): StCss<MQ> => {
+    const styleManager = new StyleManager(config);
+    return {
+        ...config,
         styleManager,
     };
+};
 
-    return <StContext.Provider value={value}>{children}</StContext.Provider>;
+export const StContext = createContext({} as StContext);
+
+export const StProvider = <MQ extends Record<string, string> = any>({ children, value }: { children: React.ReactNode; value: StCss<MQ> }) => {
+    const { mediaQueries: mqs, breakpoints } = value;
+    const mediaQueries = useMediaQueries(mqs);
+    const bpIndex = breakpoints.findIndex((bp) => mediaQueries[bp]);
+    return <StContext.Provider value={{ ...value, bpIndex, mediaQueries }}>{children}</StContext.Provider>;
 };

@@ -1,8 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { StContext } from './context';
-import { StyleManager } from './style-manager';
 
-export const useSt = (): { bpIndex: number; styleManager: StyleManager } => useContext(StContext);
+export const useSt = () => useContext(StContext);
 
 export const useHasMounted = (): boolean => {
     const [hasMounted, setHasMounted] = useState(false);

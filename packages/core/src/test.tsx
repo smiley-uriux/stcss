@@ -1,7 +1,17 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { StProvider } from './context';
+import { canonizeStCss, StProvider } from './context';
 import { st } from './St';
+
+const stCss = canonizeStCss({
+    mediaQueries: {
+        mobile: '(max-width: 719px)',
+        tablet: '(min-width: 720px) and (max-width: 991px)',
+        laptop: '(min-width: 992px) and (max-width: 1199px)',
+        desktop: '(min-width: 1200px)',
+    },
+    breakpoints: ['mobile', 'tablet', 'laptop', 'desktop'],
+});
 
 const container = document.getElementById('root') as HTMLElement;
 const root = createRoot(container);
@@ -35,7 +45,7 @@ const Text = Subtitle.extend()({
 
 root.render(
     <StrictMode>
-        <StProvider>
+        <StProvider value={stCss}>
             <Text attrs={{ title: ['text-mobile', 'text'] }}>I am text</Text>
         </StProvider>
     </StrictMode>
