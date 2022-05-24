@@ -1,5 +1,13 @@
 # @smiley-uriux/gatsby-plugin-stcss
 
+## 0.0.2
+
+### Patch Changes
+
+- af97c0b: Fixing bad release
+- Updated dependencies [af97c0b]
+  - @smiley-uriux/stcss@0.0.2
+
 ## 0.0.1
 
 ### Patch Changes
