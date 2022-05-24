@@ -4,6 +4,12 @@
 
 ### Patch Changes
 
+- af97c0b: Fixing bad release
+
+## 0.0.2
+
+### Patch Changes
+
 - 2170ccf: Still testing release process
 
 ## 0.0.1
